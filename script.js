@@ -96,15 +96,18 @@ function GameController(
     {
       name: PlayerOneName,
       marker: "X",
+      wins: 0,
     },
     {
       name: PlayerTwoName,
       marker: "O",
+      wins: 0,
     },
   ];
 
   let activePlayer = players[0];
   let gameOver = false;
+  let finalResult = null;
 
   const switchPlayerTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
@@ -123,18 +126,28 @@ function GameController(
       return;
     }
     console.log(
-      `${getActivePlayer().name} is placing thier marker on ${(row, column)} `
+      `${getActivePlayer().name} is placing their marker on (${row}, ${column})`
     );
 
-    board.placeMarker(row, column, getActivePlayer().marker);
+    const movePlayed = board.placeMarker(row, column, getActivePlayer().marker);
+    if (!movePlayed) {
+      console.log("This spot is taken.");
+      return;
+    }
 
     const result = board.checkWinner();
     if (result) {
       board.printBoard();
-      if (result === "Tie") console.log("It's a tie!");
-      else console.log(`${getActivePlayer().name} wins!`);
+      if (result === "Tie") {
+        finalResult = "It's a draw!";
+      } else {
+        console.log(`${getActivePlayer().name} wins!`);
+        activePlayer.wins++; // ✅ increment winner’s total
+        finalResult = `${getActivePlayer().name} wins!`;
+      }
+
       gameOver = true;
-      return;
+      return finalResult;
     }
 
     switchPlayerTurn();
@@ -147,6 +160,8 @@ function GameController(
     playRound,
     getActivePlayer,
     getBoard: board.getBoard,
+    getPlayers: () => players,
+    getResult: () => finalResult,
   };
 }
 
@@ -154,12 +169,19 @@ function ScreenController() {
   const game = GameController();
   const playerTurnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
+  const playerInfoDivs = document.querySelectorAll(".player-info");
+  const scoreDivs = document.querySelectorAll(".score");
+  const resultDiv = document.querySelector(".result");
+  players = game.getPlayers();
 
   const updateScreen = () => {
     boardDiv.textContent = "";
 
     const board = game.getBoard();
     const activePlayer = game.getActivePlayer();
+
+    result = game.getResult();
+    console.log("result: ", result);
 
     playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
 
@@ -176,6 +198,19 @@ function ScreenController() {
         boardDiv.appendChild(cellButton);
       });
     });
+
+    playerInfoDivs.forEach((div, index) => {
+      const player = players[index];
+      div.querySelector(".player-name").textContent = player.name;
+      div.querySelector(".player-marker").textContent = ` ${player.marker}`;
+    });
+
+    scoreDivs.forEach((div, index) => {
+      const player = players[index];
+      div.textContent = player.wins;
+    });
+
+    resultDiv.textContent = result;
   };
 
   function clickHandlerBoard(e) {
