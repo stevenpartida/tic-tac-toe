@@ -29,6 +29,12 @@
 
         <div class="score-tracker">
           <div class="score"></div>
+          <div class="button-container">
+            <button class="reset-btn">Reset</button>
+            <button class="settings-btn">
+              <img src="images/cog.svg" alt="Settings" class="settings-icon" />
+            </button>
+          </div>
           <div class="score"></div>
         </div>
 
@@ -38,5 +44,31 @@
         </div>
       </div>
     </div>
+    <dialog>
+      <form>
+        <h2>Settings</h2>
+        <p>Change Names</p>
+        <label for="player1">Player One</label>
+        <input
+          type="text"
+          id="player1"
+          name="player1"
+          class="name-input"
+          placeholder="Player One's name"
+        />
+        <label for="player2">Player Two</label>
+        <input
+          type="text"
+          id="player2"
+          name="player2"
+          class="name-input"
+          placeholder="Player Two's name"
+        />
+        <div class="form-btns">
+          <button id="formClose" type="button">Cancel</button>
+          <button id="formSave" type="button" class="save-btn">Save</button>
+        </div>
+      </form>
+    </dialog>
   </body>
 </html>

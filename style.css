@@ -97,7 +97,7 @@ button:hover {
   border-radius: 1rem;
 
   width: 100%;
-  max-width: 450px; /* ✅ keeps it centered and consistent */
+  max-width: 500px; /* ✅ keeps it centered and consistent */
   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
@@ -145,4 +145,96 @@ button:hover {
   width: 2px;
   height: 2rem; /* uses relative units */
   background-color: black;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.reset-btn {
+  font-size: 0.8rem;
+  color: #f8fafc;
+  background-color: #0f172a;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.4rem;
+}
+
+.reset-btn:hover {
+  background-color: #27272a;
+}
+
+.settings-btn {
+  font-size: 0.8rem;
+  background-color: #e4e4e7;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.4rem;
+}
+
+.settings-icon {
+  width: 1rem;
+  height: 1rem;
+  color: #d4d4d8;
+  cursor: pointer;
+}
+
+dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: none;
+  border-radius: 10px;
+  background: white;
+  padding: 3rem;
+  width: 40%;
+  height: fit-content;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: bolder;
+  font-size: xx-large;
+}
+
+form p {
+  text-align: start;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+form input {
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #0f172a;
+  border-radius: 0.8rem;
+  font-size: medium;
+}
+
+form label {
+  margin-bottom: 0.2rem;
+}
+
+.form-btns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.form-btns button {
+  padding: 1rem;
+  width: 100%;
+  border-radius: 1rem;
 }

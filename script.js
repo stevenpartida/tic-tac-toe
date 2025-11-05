@@ -154,6 +154,30 @@ function GameController(
     printNewRound();
   };
 
+  const setPlayerName = (playerIndex, newName) => {
+    if (players[playerIndex]) {
+      players[playerIndex].name = newName;
+      console.log(`Player ${playerIndex + 1} name changed to: ${newName}`);
+    }
+  };
+
+  const resetGame = () => {
+    const currentBoard = board.getBoard();
+
+    currentBoard.forEach((row) => {
+      row.forEach((cell) => Object.assign(cell, Cell()));
+    });
+
+    gameOver = false;
+    finalResult = null;
+    activePlayer = players[0];
+
+    const boardValues = currentBoard.map((row) =>
+      row.map((cell) => cell.getValue())
+    );
+    console.log("🔁 Game reset! Current board:", boardValues);
+  };
+
   printNewRound();
 
   return {
@@ -162,6 +186,8 @@ function GameController(
     getBoard: board.getBoard,
     getPlayers: () => players,
     getResult: () => finalResult,
+    resetGame,
+    setPlayerName,
   };
 }
 
@@ -172,6 +198,11 @@ function ScreenController() {
   const playerInfoDivs = document.querySelectorAll(".player-info");
   const scoreDivs = document.querySelectorAll(".score");
   const resultDiv = document.querySelector(".result");
+  const resetBtn = document.querySelector(".reset-btn");
+  const settingsBtn = document.querySelector(".settings-btn");
+  const dialog = document.querySelector("dialog");
+  const saveNameBtn = document.querySelector(".save-btn");
+  const nameInputs = document.querySelectorAll(".name-input");
   players = game.getPlayers();
 
   const updateScreen = () => {
@@ -223,7 +254,30 @@ function ScreenController() {
     updateScreen();
   }
 
+  function clickHandlerDialog() {
+    dialog.showModal();
+  }
+
+  function clickHandlerReset() {
+    game.resetGame();
+    updateScreen();
+  }
+
+  function clickHandlerSaveNames() {
+    const player1Name = nameInputs[0].value;
+    const player2Name = nameInputs[1].value;
+
+    if (player1Name) game.setPlayerName(0, player1Name);
+    if (player2Name) game.setPlayerName(1, player2Name);
+
+    updateScreen();
+    dialog.close();
+  }
+
   boardDiv.addEventListener("click", clickHandlerBoard);
+  resetBtn.addEventListener("click", clickHandlerReset);
+  settingsBtn.addEventListener("click", clickHandlerDialog);
+  saveNameBtn.addEventListener("click", clickHandlerSaveNames);
 
   updateScreen();
 }
