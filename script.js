@@ -1,8 +1,18 @@
+/* 
+Factory Function that creates and manages the state of the tic tac toe board.
+Initializes board setup by creating a 3x3 array of Cell() objects. 
+
+getBoard(): returns board array
+placeMarker(): places a marker (X or O) on a specific cell if available
+checkWinner(): checks for winner, tie, or ongoing game
+printBoard(): logs the board state to the console
+*/
 function GameBoard() {
   const rows = 3;
   const columns = 3;
   const board = [];
 
+  // Create 3x3 board filled with Cell() objects
   for (let i = 0; i < rows; i++) {
     board[i] = [];
     for (let j = 0; j < columns; j++) {
@@ -12,15 +22,17 @@ function GameBoard() {
 
   const getBoard = () => board;
 
+  // Places a player's marker on the specified position if cell is empty
   const placeMarker = (row, column, marker) => {
     const cell = board[row][column];
     return cell.addMark(marker);
   };
 
+  // Checks all rows, columns, and diagonals for a winner or tie
   const checkWinner = () => {
     const grid = board.map((row) => row.map((cell) => cell.getValue()));
 
-    // rows
+    // Checks rows
     for (let i = 0; i < 3; i++) {
       if (
         grid[i][0] !== 0 &&
@@ -30,7 +42,7 @@ function GameBoard() {
         return grid[i][0];
     }
 
-    // columns
+    // Checks columns
     for (let j = 0; j < 3; j++) {
       if (
         grid[0][j] !== 0 &&
@@ -40,7 +52,7 @@ function GameBoard() {
         return grid[0][j];
     }
 
-    // diagonals
+    // Checks diagonals
     if (
       grid[0][0] !== 0 &&
       grid[0][0] === grid[1][1] &&
@@ -55,13 +67,14 @@ function GameBoard() {
     )
       return grid[0][2];
 
-    // tie?
+    // Check for tie (board full, no winner)
     const isFull = grid.flat().every((cell) => cell !== 0);
     if (isFull) return "Tie";
 
     return null; // game still ongoing
   };
 
+  // Logs the board’s current cell values to the console
   const printBoard = () => {
     const boardWithCellValues = board.map((row) =>
       row.map((cell) => cell.getValue())
@@ -72,6 +85,13 @@ function GameBoard() {
   return { getBoard, printBoard, placeMarker, checkWinner };
 }
 
+/* 
+Factory Function representing a single cell on the board.
+Stores a value (0 if empty, or a player's marker 'X'/'O').
+
+addMark(): marks the cell with the player’s marker if it's empty
+getValue(): returns the current cell value
+*/
 function Cell() {
   let value = 0;
 
@@ -86,12 +106,23 @@ function Cell() {
   return { addMark, getValue };
 }
 
+/* 
+Factory Function that controls the game logic and state.
+Handles player turns, win detection, score tracking, and game reset.
+
+Methods:
+playRound(): plays one round and checks for win/tie
+getActivePlayer(): returns the player whose turn it is
+setPlayerName(): updates player names
+resetGame(): resets board and state for a new match
+*/
 function GameController(
   PlayerOneName = "Player One",
   PlayerTwoName = "Player Two"
 ) {
   const board = GameBoard();
 
+  // Define player objects with names, markers, and win count
   const players = [
     {
       name: PlayerOneName,
@@ -109,17 +140,20 @@ function GameController(
   let gameOver = false;
   let finalResult = null;
 
+  // Switch active player after each valid move
   const switchPlayerTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
   };
 
   const getActivePlayer = () => activePlayer;
 
+  // Prints the current board and player turn to the console
   const printNewRound = () => {
     board.printBoard();
     console.log(`${getActivePlayer().name}'s turn.`);
   };
 
+  // Executes a round: player move, win/tie check, and turn switch
   const playRound = (row, column) => {
     if (gameOver) {
       console.log("Game is over! Restart to play again.");
@@ -154,6 +188,7 @@ function GameController(
     printNewRound();
   };
 
+  // Updates a player’s name by index (0 or 1)
   const setPlayerName = (playerIndex, newName) => {
     if (players[playerIndex]) {
       players[playerIndex].name = newName;
@@ -161,6 +196,7 @@ function GameController(
     }
   };
 
+  // Resets the game board and state variables
   const resetGame = () => {
     const currentBoard = board.getBoard();
 
@@ -191,6 +227,16 @@ function GameController(
   };
 }
 
+/* 
+Module Function that handles the UI interaction and rendering logic.
+Updates DOM based on game state, handles button clicks, and manages dialog inputs.
+
+updateScreen(): updates board and UI text
+clickHandlerBoard(): handles board cell clicks
+clickHandlerDialog(): opens settings dialog
+clickHandlerReset(): resets game board
+clickHandlerSaveNames(): saves player name changes
+*/
 function ScreenController() {
   const game = GameController();
   const playerTurnDiv = document.querySelector(".turn");
@@ -205,6 +251,7 @@ function ScreenController() {
   const nameInputs = document.querySelectorAll(".name-input");
   players = game.getPlayers();
 
+  // Updates the visual board and player information
   const updateScreen = () => {
     boardDiv.textContent = "";
 
@@ -216,6 +263,7 @@ function ScreenController() {
 
     playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
 
+    // Render each cell as a button on the board
     board.forEach((row, rowIndex) => {
       row.forEach((cell, columnIndex) => {
         const cellButton = document.createElement("button");
@@ -230,12 +278,14 @@ function ScreenController() {
       });
     });
 
+    // Update player info (names and markers)
     playerInfoDivs.forEach((div, index) => {
       const player = players[index];
       div.querySelector(".player-name").textContent = player.name;
       div.querySelector(".player-marker").textContent = ` ${player.marker}`;
     });
 
+    // Update player scores
     scoreDivs.forEach((div, index) => {
       const player = players[index];
       div.textContent = player.wins;
@@ -244,6 +294,7 @@ function ScreenController() {
     resultDiv.textContent = result;
   };
 
+  // Handles clicks on board cells
   function clickHandlerBoard(e) {
     const selectedRow = e.target.dataset.row;
     const selectedColumn = e.target.dataset.column;
@@ -254,15 +305,18 @@ function ScreenController() {
     updateScreen();
   }
 
+  // Opens settings dialog for name editing
   function clickHandlerDialog() {
     dialog.showModal();
   }
 
+  // Resets the board and updates the screen
   function clickHandlerReset() {
     game.resetGame();
     updateScreen();
   }
 
+  // Saves updated player names and closes the dialog
   function clickHandlerSaveNames() {
     const player1Name = nameInputs[0].value;
     const player2Name = nameInputs[1].value;
@@ -274,6 +328,7 @@ function ScreenController() {
     dialog.close();
   }
 
+  // Event listeners for game controls
   boardDiv.addEventListener("click", clickHandlerBoard);
   resetBtn.addEventListener("click", clickHandlerReset);
   settingsBtn.addEventListener("click", clickHandlerDialog);
@@ -282,4 +337,5 @@ function ScreenController() {
   updateScreen();
 }
 
+// Initialize the UI and start the game
 ScreenController();
